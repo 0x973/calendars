@@ -2,12 +2,14 @@ name: Update Oil Price Calendar
 
 on:
   schedule:
-    - cron: '0 0 1 1 *' # 每年1月1日00:00 UTC运行一次
+    - cron: '0 22 * * *'
   workflow_dispatch:
 
 jobs:
   update-calendar:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
 
     steps:
     - name: Checkout repository
