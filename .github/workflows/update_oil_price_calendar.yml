@@ -31,7 +31,7 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add oil_price_adjustment_*.ics
+        git add oil_price_adjustment.ics
         git commit -m "Update iCalendar file"
         git push
       env:
