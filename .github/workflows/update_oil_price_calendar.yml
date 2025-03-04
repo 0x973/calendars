@@ -25,4 +25,4 @@ jobs:
 
     - name: Update Oil Price Calendar
       run: |
-        python oil_price_update_calendar.py
+        python update_oil_price_calendar.py
