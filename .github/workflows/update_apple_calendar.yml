@@ -1,4 +1,4 @@
-name: Update Apple Calendar
+name: Update Oil Price Calendar
 
 on:
   schedule:
@@ -23,6 +23,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Update Apple Calendar
+    - name: Update Oil Price Calendar
       run: |
-        python update_calendar.py
+        python oil_price_update_calendar.py
