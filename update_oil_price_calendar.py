@@ -25,13 +25,15 @@ cal.add('version', '2.0')
 
 # 生成每10个工作日的事件
 current_date = start_date
+adjustment_count = 0
 while current_date.year == year:
     if is_workday(current_date):
+        adjustment_count += 1
         event = Event()
         event.add('summary', '油价调整')
         event.add('dtstart', current_date.replace(hour=23, minute=59, second=59))
         event.add('dtend', (current_date + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0))
-        event.add('description', '这是一个油价调整的事件。')
+        event.add('description', f'这是今年第{adjustment_count}次油价调整。')
         cal.add_component(event)
 
         # 移动到下一个10个工作日
