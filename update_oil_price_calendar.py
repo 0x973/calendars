@@ -14,9 +14,9 @@ def add_workdays(start_date, workdays):
             days_added += 1
     return current_date
 
-# 定义年份和起始日期
+# 定义年份和首次调整日期
 year = datetime.datetime.now().year
-start_date = datetime.datetime(year, 1, 1)
+first_adjustment_date = datetime.datetime(2025, 1, 2)  # 设定首次调整日期
 
 # 初始化iCalendar内容
 cal = Calendar()
@@ -24,7 +24,7 @@ cal.add('prodid', '-//Oil Price Adjustment Calendar//example.com//')
 cal.add('version', '2.0')
 
 # 生成每10个工作日的事件
-current_date = start_date
+current_date = first_adjustment_date
 adjustment_count = 0
 while current_date.year == year:
     if is_workday(current_date):
