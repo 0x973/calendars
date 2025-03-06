@@ -7,7 +7,7 @@ import requests
 os.environ['TZ'] = 'Asia/Shanghai'
 time.tzset()
 
-def get_tj_92_price(regionName):
+def get_92oil_price(regionName):
     url = 'https://v2.xxapi.cn/api/oilPrice'
     headers = {
         "Accept": "application/json, text/plain, */*",
@@ -81,7 +81,7 @@ while current_date.year <= year:
     else:
         current_date += timedelta(days=1)
 
-price, priceChange = get_tj_92_price('天津市')
+price, priceChange = get_92oil_price('天津市')
 if price != 0 and priceChange != 0:
     dtstart = date.today()
     dtend = dtstart + timedelta(days=1)
