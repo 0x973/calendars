@@ -85,7 +85,7 @@ price, priceChange = get_92oil_price('天津市')
 if price != 0 and priceChange != 0:
     dtstart = date.today()
     dtend = dtstart + timedelta(days=1)
-    event = new_event('今日92号油价', dtstart, dtend, f"当前天津市92号汽油{price}元/升，较上次调整{priceChange}元/升")
+    event = new_event(f"92号汽油{price}元/升", dtstart, dtend, f"当前天津市92号汽油{price}元/升，较上次调整{priceChange}元/升")
     cal.add_component(event)
 
 # 将iCalendar内容写入文件
