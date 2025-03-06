@@ -4,9 +4,9 @@ from chinese_calendar import is_holiday, is_workday
 import requests
 
 os.environ['TZ'] = 'Asia/Shanghai'
-time.tzset()  # 使时区设置生效
+time.tzset()
 
-def get_tj_92_price():
+def get_tj_92_price(regionName):
     url = 'https://v2.xxapi.cn/api/oilPrice'
     headers = {
         "Accept": "application/json, text/plain, */*",
@@ -19,14 +19,16 @@ def get_tj_92_price():
         if response.status_code == 200:
             data = response.json()
             for item in data.get('data', []):
-                if item.get("regionName") == '天津市':
-                    return item.get('n92', 0)
-        return 0
+                if item.get("regionName") == regionName:
+                    n92 = item.get('n92', 0)
+                    n92Change = item.get('n92Change', 0)
+                    return n92, n92Change
+        return 0, 0
     except (requests.RequestException, ValueError, KeyError):
-        return 0
+        return 0, 0
 
 def add_workdays(start_date, workdays):
-    # 如果将到下一年，则直接返回
+    # 如果将到下一年，直接返回下一年的第一天
     if start_date.month == 12 and start_date.day + workdays > 31:
         return datetime.datetime(start_date.year + 1, 1, 1)
 
@@ -37,6 +39,14 @@ def add_workdays(start_date, workdays):
         if is_workday(current_date):
             days_added += 1
     return current_date
+
+def new_event(summary, dtstart, dtend, description):
+    event = Event()
+    event.add('summary', summary)
+    event.add('dtstart', dtstart)
+    event.add('dtend', dtend)
+    event.add('description', description)
+    return event
 
 # 定义年份和首次调整日期
 year = datetime.datetime.now().year
@@ -59,24 +69,23 @@ while current_date.year <= year:
 
     if is_workday(current_date):
         adjustment_count += 1
-        event = Event()
-        event.add('summary', '油价调整')
-        event.add('dtstart', current_date.replace(hour=23, minute=59, second=59))
-        event.add('dtend', (current_date + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0))
-        
         description = f'这是今年第{adjustment_count}次油价调整'
-        if current_date.date() == datetime.datetime.now().date():
-            price = get_tj_92_price()
-            if price != 0:
-                description += f'，当前92号汽油{price}元/升'
-        event.add('description', description)
-
+        dtstart = current_date.replace(hour=23, minute=59, second=59)
+        dtend = (current_date + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0)
+        event = new_event('油价调整', dtstart, dtend, description)
         cal.add_component(event)
 
-        # 移动到下一个10个工作日
+        # 移动到下一个第10个工作日
         current_date = add_workdays(current_date, 10)
     else:
         current_date += datetime.timedelta(days=1)
+
+price, priceChange = get_tj_92_price('天津市')
+if price != 0 and priceChange != 0:
+    dtstart = datetime.datetime.now()
+    dtend = dtstart + datetime.timedelta(hours=1)
+    event = new_event('今日92号油价', dtstart, dtend, f'当前天津市92号汽油{price}元/升，较上次调整{priceChange}元/升')
+    cal.add_component(event)
 
 # 将iCalendar内容写入文件
 with open(f'oil_price_adjustment.ics', 'wb') as f:
