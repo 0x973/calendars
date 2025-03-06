@@ -1,4 +1,5 @@
-import os, time, datetime
+import os, time
+from datetime import date, datetime, timedelta
 from icalendar import Calendar, Event
 from chinese_calendar import is_holiday, is_workday
 import requests
@@ -30,12 +31,12 @@ def get_tj_92_price(regionName):
 def add_workdays(start_date, workdays):
     # 如果将到下一年，直接返回下一年的第一天
     if start_date.month == 12 and start_date.day + workdays > 31:
-        return datetime.datetime(start_date.year + 1, 1, 1)
+        return datetime(start_date.year + 1, 1, 1)
 
     current_date = start_date
     days_added = 0
     while days_added < workdays:
-        current_date += datetime.timedelta(days=1)
+        current_date += timedelta(days=1)
         if is_workday(current_date):
             days_added += 1
     return current_date
@@ -49,8 +50,8 @@ def new_event(summary, dtstart, dtend, description):
     return event
 
 # 定义年份和首次调整日期
-year = datetime.datetime.now().year
-first_adjustment_date = datetime.datetime(2024, 1, 3)  # 设定首次调整日期
+year = datetime.now().year
+first_adjustment_date = datetime(2024, 1, 3)  # 设定首次调整日期
 
 # 初始化iCalendar内容
 cal = Calendar()
@@ -71,20 +72,20 @@ while current_date.year <= year:
         adjustment_count += 1
         description = f'这是今年第{adjustment_count}次油价调整'
         dtstart = current_date.replace(hour=23, minute=59, second=59)
-        dtend = (current_date + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0)
+        dtend = (current_date + timedelta(days=1)).replace(hour=0, minute=0, second=0)
         event = new_event('油价调整', dtstart, dtend, description)
         cal.add_component(event)
 
         # 移动到下一个第10个工作日
         current_date = add_workdays(current_date, 10)
     else:
-        current_date += datetime.timedelta(days=1)
+        current_date += timedelta(days=1)
 
 price, priceChange = get_tj_92_price('天津市')
 if price != 0 and priceChange != 0:
-    dtstart = datetime.datetime.now()
-    dtend = dtstart + datetime.timedelta(hours=1)
-    event = new_event('今日92号油价', dtstart, dtend, f'当前天津市92号汽油{price}元/升，较上次调整{priceChange}元/升')
+    dtstart = date.today()
+    dtend = dtstart + timedelta(days=1)
+    event = new_event('今日92号油价', dtstart, dtend, f"当前天津市92号汽油{price}元/升，较上次调整{priceChange}元/升")
     cal.add_component(event)
 
 # 将iCalendar内容写入文件
