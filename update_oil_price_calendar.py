@@ -95,6 +95,8 @@ cal = create_oil_price_adjustment_calendar(first_adjustment_date, year)
 # 获取油价数据并添加到日历中
 regions = ['天津市', '河北省', '江苏省', '浙江省']
 datas = get_92oil_price(regions)
+if datas is None:
+    datas = get_92oil_price(regions)
 if datas:
     add_today_oil_price_event(cal, datas, regions)
 
