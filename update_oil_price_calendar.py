@@ -2,7 +2,12 @@ import os, time
 from datetime import date, datetime, timedelta
 from icalendar import Calendar, Event
 from chinese_calendar import is_holiday, is_workday
+from chinese_calendar.constants import holidays
 import requests
+
+# 动态获取 chinese_calendar 库支持的年份范围
+min_supported_year = min(holidays.keys()).year
+max_supported_year = max(holidays.keys()).year
 
 os.environ['TZ'] = 'Asia/Shanghai'
 time.tzset()
@@ -30,16 +35,19 @@ def get_92oil_price(region_names):
         return None
 
 def add_workdays(start_date, workdays):
-    # 如果将到下一年，直接返回下一年的第一天
-    if start_date.month == 12 and start_date.day + workdays > 31:
-        return datetime(start_date.year + 1, 1, 1)
-
     current_date = start_date
     days_added = 0
     while days_added < workdays:
         current_date += timedelta(days=1)
-        if is_workday(current_date):
+        
+        # 检查日期是否在 chinese_calendar 库支持的范围内
+        if current_date.year < min_supported_year or current_date.year > max_supported_year:
+            # 对于超出范围的日期，假设是工作日（简化处理）
             days_added += 1
+        else:
+            if is_workday(current_date):
+                days_added += 1
+                
     return current_date
 
 def new_event(summary, dtstart, dtend, description):
@@ -63,7 +71,7 @@ def create_oil_price_adjustment_calendar(first_adjustment_date, year):
         if current_date.year != current_year:
             current_year = current_date.year
             adjustment_count = 0
-
+            
         if is_workday(current_date):
             adjustment_count += 1
             description = f'这是今年第{adjustment_count}次油价调整'
@@ -85,9 +93,9 @@ def add_today_oil_price_event(cal, datas, regions):
     event = new_event('今日油价', dtstart, dtend, description)
     cal.add_component(event)
 
-# 定义年份和首次调整日期
+# 定义截止年份和首次调整日期
 year = datetime.now().year
-first_adjustment_date = datetime(2024, 1, 3)  # 设定首次调整日期
+first_adjustment_date = datetime(2024, 1, 3)  # 设定首次调整日期，2024年1月3日开始调整
 
 # 创建油价调整日历
 cal = create_oil_price_adjustment_calendar(first_adjustment_date, year)
