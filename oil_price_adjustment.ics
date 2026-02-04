@@ -453,11 +453,11 @@ DESCRIPTION:这是今年第25次油价调整
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:今日油价
-DTSTART;VALUE=DATE:20260204
-DTEND;VALUE=DATE:20260205
-DESCRIPTION:天津市92号汽油6.76元/升，较上次调整0.07元/升\n
- 河北省92号汽油6.76元/升，较上次调整0.07元/升\n江苏省92
- 号汽油6.75元/升，较上次调整0.07元/升\n浙江省92号汽油6.7
- 5元/升，较上次调整0.07元/升
+DTSTART;VALUE=DATE:20260205
+DTEND;VALUE=DATE:20260206
+DESCRIPTION:天津市92号汽油6.93元/升，较上次调整0.17元/升\n
+ 河北省92号汽油6.93元/升，较上次调整0.17元/升\n江苏省92
+ 号汽油6.91元/升，较上次调整0.16元/升\n浙江省92号汽油6.9
+ 1元/升，较上次调整0.16元/升
 END:VEVENT
 END:VCALENDAR
